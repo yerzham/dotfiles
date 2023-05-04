@@ -38,7 +38,7 @@
             :onhoverlost "${eww} update volume_reveal=false"
             :halign "end"
   (box :class "module" :space-evenly "false" :orientation "h" :spacing "3" 
-  (button   :onclick "echo ${volume_percent}"   :class "volume_icon" "🔊")
+  (button   :onclick "echo ${volume_percent}"   :class "volume_icon" "󰕾")
   (revealer :transition "slideleft"
         :reveal volume_reveal
         :duration "350ms"
@@ -104,9 +104,18 @@
 (defwindow bar1
   :monitor 0
   :exclusive true
-  :geometry (geometry :x "0%"
-                      :y "0%"
-                      :width "99%"
+  :geometry (geometry :width "99%"
+                      :height "30px"
+                      :anchor "top center"
+                      :y "10px"
+                    )
+  :reserve (struts :side "top" :distance "4%")
+  (bar_1))
+
+(defwindow bar2
+  :monitor 1
+  :exclusive true
+  :geometry (geometry :width "99%"
                       :height "30px"
                       :anchor "top center"
                       :y "10px"

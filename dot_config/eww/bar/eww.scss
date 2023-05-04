@@ -2,9 +2,10 @@
   all: unset; //Unsets everything so you can style everything from scratch
 }
 
-$bg-color: rgba(23, 63, 54, 0.918);
-$volume-color: rgb(245, 149, 93);
-$accent-color: rgb(93, 233, 179);
+$bg-color: rgba(0, 0, 0, 0.40);
+$bg-color-focused: rgba(0, 0, 0, 0.60);
+$volume-color: hsl(17, 69%, 63%);
+$accent-color: hsl(157, 69%, 63%);
 $slider-color: rgb(236, 135, 76);
 
 //Global Styles
@@ -12,7 +13,7 @@ $slider-color: rgb(236, 135, 76);
   background-color: transparent;
   border-radius: 8px;
   transition-property: box-shadow;
-  transition-duration: 00ms;
+  transition-duration: 200ms;
   transition-timing-function: ease-in-out;
 }
 .modules {
@@ -21,12 +22,12 @@ $slider-color: rgb(236, 135, 76);
 .modules-eventbox {
   background-color: $bg-color;
   border-radius: 8px;
-  transition-property: box-shadow;
+  transition-property: box-shadow, background-color;
   transition-duration: 300ms;
   transition-timing-function: ease-in-out;
 }
 .modules-eventbox:hover {
-  box-shadow: inset 0px 0px 0px 2px $accent-color;
+  background-color: $bg-color-focused;
 }
 .hovered {
   box-shadow: inset 0px 0px 0px 2px $accent-color;
@@ -50,6 +51,7 @@ $slider-color: rgb(236, 135, 76);
   border-radius: 2px;
   min-height: 6px;
   min-width: 50px;
+  margin-left: 5px;
 }
 
 
@@ -63,7 +65,7 @@ $slider-color: rgb(236, 135, 76);
 }
 .clock_date_class {
   font-size: 14;
-  margin: 0px 0px -3px 7px;
+  margin: 0px 0px -3px 5px;
   color: #d7beda;
 }
 .clock_minute_class {
@@ -90,6 +92,5 @@ tooltip label {
 .volume_icon {
   font-size: 18;
   color: $volume-color;
-  margin: 0px 0px -5px 0px;
 }
 
