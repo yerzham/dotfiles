@@ -1,21 +1,10 @@
-(defwidget bar []
-  (centerbox :orientation "h"
-    (workspaces)
-    (music)
-    (sidestuff)))
-
-(defwidget sidestuff []
-  (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
-    (metric :label "🔊"
-            :value volume
-            :onchange "amixer sset Master {}%")
-    (metric :label ""
-            :value {EWW_RAM.used_mem_perc}
-            :onchange "")
-    (metric :label "💾"
-            :value {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
-            :onchange "")
-    time))
+(defvar eww "eww --config ~/.config/eww/bar")
+(defpoll volume_percent :interval "1s" "amixer sget Master | grep 'Mono:' | awk -F'[][]' '{ print $2 }' | tr -d '%'")
+(defpoll clock_time :interval "5m" "date +\%I")
+(defpoll clock_minute :interval "5s" "date +\%M")
+(defpoll clock_date :interval "10h" "date '+%d/%m'")
+(defvar volume_reveal false)
+(defvar clock_reveal false)
 
 (defwidget workspaces []
   (box :class "workspaces"
@@ -33,55 +22,95 @@
     (button :onclick "wmctrl -s 7" 8)
     (button :onclick "wmctrl -s 8" 9)))
 
-(defwidget music []
-  (box :class "music"
-       :orientation "h"
-       :space-evenly false
-       :halign "center"
-    {music != "" ? "🎵${music}" : ""}))
-
-
-(defwidget metric [label value onchange]
+(defwidget metric [value onchange]
   (box :orientation "h"
-       :class "metric"
-       :space-evenly false
-    (box :class "label" label)
+        :class "metric"
+        :space-evenly false
     (scale :min 0
-           :max 101
-           :active {onchange != ""}
-           :value value
-           :onchange onchange)))
+            :max 101
+            :active {onchange != ""}
+            :value value
+            :orientation "h"
+            :onchange onchange)))
+
+(defwidget volume []
+  (eventbox :onhover "${eww} update volume_reveal=true"
+            :onhoverlost "${eww} update volume_reveal=false"
+            :halign "end"
+  (box :class "module" :space-evenly "false" :orientation "h" :spacing "3" 
+  (button   :onclick "echo ${volume_percent}"   :class "volume_icon" "🔊")
+  (revealer :transition "slideleft"
+        :reveal volume_reveal
+        :duration "350ms"
+        :tooltip "${volume_percent}%"
+        (metric :label ""
+                :value volume_percent
+                :onchange "amixer sset Master {}%")))))
+
+(defwidget clock []
+  (eventbox :onhover "${eww} update clock_reveal=true"
+            :onhoverlost "${eww} update clock_reveal=false"
+            :class "module"
+            :halign "end"
+    (box :class "module" :space-evenly "false" :orientation "h" :spacing "3" 
+      (label :text clock_time :class "clock_time_class" )
+      (label :text ":" :class "clock_time_sep" )
+      (label :text clock_minute :class "clock_minute_class")
+      (revealer :transition "slideleft"
+        :reveal clock_reveal
+        :duration "350ms"
+        (button :class "clock_date_class"
+                :onclick "" clock_date
+        )
+  ))))
+
+(defwidget right []
+  (eventbox :halign "end"
+            :class "modules-eventbox"
+            (box :orientation "h"
+                 :space-evenly "false"
+                 :spacing "14"
+                 :class "modules"
+                 (volume)
+                 (clock))))
 
 
+(defwidget left []
+  (eventbox :halign "start"
+            :class "modules-eventbox"
+            (box :orientation "h"
+                 :space-evenly "false"
+                 :spacing "14"
+                 :class "modules"
+                 (workspaces))))
 
-(deflisten music :initial ""
-  "playerctl --follow metadata --format '{{ artist }} - {{ title }}' || true")
 
-(defpoll volume :interval "1s"
-  "./scripts/getvol")
+(defwidget center []
+  (box :orientation "h" 
+      :space-evenly false  
+          :halign "center"
+      :class "center_modules"
+  ))
 
-(defpoll time :interval "10s"
-  "date '+%H:%M %b %d, %Y'")
+(defwidget bar_1 []
+  (box :class "bar_class"
+        :orientation "h"
+  (left)
+  (center)
+  (right)
+    ))
+
 
 (defwindow bar1
   :monitor 0
   :exclusive true
   :geometry (geometry :x "0%"
                       :y "0%"
-                      :width "90%"
-                      :height "10px"
-                      :anchor "top center")
+                      :width "99%"
+                      :height "30px"
+                      :anchor "top center"
+                      :y "10px"
+                    )
   :reserve (struts :side "top" :distance "4%")
-  (bar))
-
-(defwindow bar2
-  :monitor 1
-  :exclusive true
-  :geometry (geometry :x "0%"
-		      :y "0%"
-		      :width "90%"
-		      :height "10px"
-		      :anchor "top center")
-  :reserve (struts :side "top" :distance "4%")
-  (bar))
+  (bar_1))
 
