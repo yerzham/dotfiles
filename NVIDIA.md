@@ -17,7 +17,7 @@ env = __GLX_VENDOR_LIBRARY_NAME,nvidia
 env = WLR_NO_HARDWARE_CURSORS,1
 ```
 
-Alternatively, set it for a executable wrapper (probably a better choice):
+Alternatively, set it for an executable wrapper (probably a better choice):
 ```
 #!/bin/sh
 
@@ -46,7 +46,7 @@ Type=Application
 ### Hyprland suspend fix
 https://wiki.archlinux.org/title/NVIDIA/Tips_and_tricks#Preserve_video_memory_after_suspend
 
-Enable `nvidia-suspend.service` and add `/etc/modprobe.d/nvidia-power-management.conf`:
+Enable `nvidia-suspend.service` (and maybe also `nvidia-hibernate.service`) and add `/etc/modprobe.d/nvidia-power-management.conf`:
 ```
 options nvidia NVreg_PreserveVideoMemoryAllocations=1
 ```
