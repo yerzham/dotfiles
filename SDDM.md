@@ -8,5 +8,5 @@ DisplayServer=wayland
 GreeterEnvironment=QT_WAYLAND_SHELL_INTEGRATION=layer-shell
 
 [Wayland]
-CompositorCommand=<path to hyprland wrapper or hypeland itself>
+CompositorCommand=<path to hyprland wrapper or hyprland itself>
 ```
