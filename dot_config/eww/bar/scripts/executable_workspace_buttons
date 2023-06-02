@@ -1,0 +1,81 @@
+#!/bin/sh
+
+# arg1: workspace number
+
+n=$1
+
+hue2rgb() {
+    p=$1
+    q=$2
+    t=$3
+    if [ $(echo "$t < 0" | bc -l) -eq 1 ]; then
+        t=$(echo "$t + 1" | bc -l)
+    fi
+    if [ $(echo "$t > 1" | bc -l) -eq 1 ]; then
+        t=$(echo "$t - 1" | bc -l)
+    fi
+    if [ $(echo "$t < 1 / 6" | bc -l) -eq 1 ]; then
+        echo "$p + ($q - $p) * 6 * $t" | bc -l
+    elif [ $(echo "$t < 1 / 2" | bc -l) -eq 1 ]; then
+        echo "$q" | bc -l
+    elif [ $(echo "$t < 2 / 3" | bc -l) -eq 1 ]; then
+        echo "$p + ($q - $p) * (2 / 3 - $t) * 6" | bc -l
+    else
+        echo "$p" | bc -l
+    fi
+}
+
+hsl2rgb() {
+    h=$1
+    s=$2
+    l=$3
+    h=$(echo "$h" | awk '{ print $1 / 360 }')
+    s=$(echo "$s" | awk '{ print $1 / 100 }')
+    l=$(echo "$l" | awk '{ print $1 / 100 }')
+    if [ $s -eq 0 ]; then
+        r=$l
+        g=$l
+        b=$l
+    else
+        if [ $(echo "$l < 0.5" | bc -l) -eq 1 ]; then
+            q=$(echo "$l * (1 + $s)" | bc -l)
+        else
+            q=$(echo "$l + $s - ($l * $s)" | bc -l)
+        fi
+        p=$(echo "2 * $l - $q" | bc -l)
+        r=$(hue2rgb $p $q $(echo "$h + 1 / 3" | bc -l))
+        g=$(hue2rgb $p $q $h)
+        b=$(hue2rgb $p $q $(echo "$h - 1 / 3" | bc -l))
+    fi
+    r=$(echo "$r * 255" | bc -l | awk '{ print int($1) }')
+    g=$(echo "$g * 255" | bc -l | awk '{ print int($1) }')
+    b=$(echo "$b * 255" | bc -l | awk '{ print int($1) }')
+    printf "%02x%02x%02x\n" $r $g $b
+}
+
+printf "(box :class \"module\" :orientation \"h\" :space-evenly true :valign \"center\" :halign \"center\" :spacing 10 :height 30 "
+
+current_workspace=$(hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk '{ print $3 }')
+
+for i in $(seq 1 $n); do
+    workspace=$i
+
+    # Get the current workspace
+    workspace_current=$(hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk '{ print $3 }')
+
+    # Get the workspace monitor
+    monitor=$(hyprctl workspaces | grep -wv 'grep' | grep -w "ID $workspace" | awk -F'[ :]' '{ print $7 }')
+
+    # Monitor button hue from random value where monitor name is the seed
+    monitor_hue=$(echo "s$monitor" | md5sum | awk '{ print $1 }' | sed 's/[^0-9]//g' | awk '{ print $1 % 360 }')
+
+    # Monitor button color (grey if monitor is undefined)
+    monitor_color=$(if [ -z "$monitor" ]; then echo "888888"; else echo $(hsl2rgb $monitor_hue 80 70); fi)
+
+    # Print the workspace button
+    printf "(button :onclick \"\${setworkspace} $workspace\" :tooltip \"Workspace $workspace\" :style \"color: #$monitor_color;\" {workspace==\"$workspace\" ? \"\" : \"\"} )"
+done
+
+printf ")"
+
+exit

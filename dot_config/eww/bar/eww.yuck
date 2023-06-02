@@ -1,26 +1,22 @@
 (defvar eww "eww --config ~/.config/eww/bar")
 (defpoll volume_percent :interval "1s" "amixer sget Master | grep 'Mono:' | awk -F'[][]' '{ print $2 }' | tr -d '%'")
+(defpoll workspace :interval "200ms" "hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk '{ print $3 }'")
+(defpoll monitor :interval "200ms" "hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk -F'[ :]' '{ print $7 }'")
 (defpoll clock_time :interval "5m" "date +\%I")
 (defpoll clock_minute :interval "5s" "date +\%M")
 (defpoll clock_date :interval "10h" "date '+%d/%m'")
 (defvar volume_reveal false)
 (defvar clock_reveal false)
+(defvar setworkspace "scripts/setworkspace")
+(defvar setworkspace_color "scripts/setworkspace_color data/monitor_colors.conf")
+(defpoll workspace_buttons :interval "2s" "scripts/workspace_buttons2 9 data/monitor_colors.conf")
 
 (defwidget workspaces []
-  (box :class "workspaces"
-       :orientation "h"
-       :space-evenly true
-       :halign "start"
-       :spacing 10
-    (button :onclick "hyprctl dispatch workspace 1" 1)
-    (button :onclick "hyprctl dispatch workspace 1" 2)
-    (button :onclick "hyprctl dispatch workspace 2" 3)
-    (button :onclick "hyprctl dispatch workspace 3" 4)
-    (button :onclick "hyprctl dispatch workspace 4" 5)
-    (button :onclick "hyprctl dispatch workspace 5" 6)
-    (button :onclick "hyprctl dispatch workspace 6" 7)
-    (button :onclick "hyprctl dispatch workspace 7" 8)
-    (button :onclick "hyprctl dispatch workspace 8" 9)))
+  (box :class "module" :orientation "h" :space-evenly false :spacing 15 
+  (literal :content workspace_buttons)
+    (label :height 30 :text workspace :yalign: 0 :class "workspace_label") 
+  )
+)
 
 (defwidget metric [value onchange]
   (box :orientation "h"
@@ -36,9 +32,8 @@
 (defwidget volume []
   (eventbox :onhover "${eww} update volume_reveal=true"
             :onhoverlost "${eww} update volume_reveal=false"
-            :halign "end"
-  (box :class "module" :space-evenly "false" :orientation "h" :spacing "3" 
-  (button   :onclick "echo ${volume_percent}"   :class "volume_icon" "󰕾")
+  (box :class "module" :space-evenly false :orientation "h" :spacing 3 :height 30
+  (button   :onclick "echo ${volume_percent}" :class "volume_icon" "󰕾")
   (revealer :transition "slideleft"
         :reveal volume_reveal
         :duration "350ms"
@@ -50,9 +45,7 @@
 (defwidget clock []
   (eventbox :onhover "${eww} update clock_reveal=true"
             :onhoverlost "${eww} update clock_reveal=false"
-            :class "module"
-            :halign "end"
-    (box :class "module" :space-evenly "false" :orientation "h" :spacing "3" 
+    (box :class "module" :space-evenly false :orientation "h" :spacing 3
       (label :text clock_time :class "clock_time_class" )
       (label :text ":" :class "clock_time_sep" )
       (label :text clock_minute :class "clock_minute_class")

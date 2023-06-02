@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# arg1: monitor colors file path
+# arg2: workspace color to set
+
+# Get the arguments
+monitor_colors_file=$1
+workspace_color=$2
+
+# Get the current workspace
+workspace=$(hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk '{ print $3 }')
+
+# Get the current workspace monitor
+monitor=$(hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk -F'[ :]' '{ print $7 }')
+
+echo "0 = $workspace_color" >> "$monitor_colors_file"

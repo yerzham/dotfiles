@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# arg1: workspace number to set
+
+# Get the arguments
+workspace_target=$1
+
+# Get the current workspace
+workspace=$(hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk '{ print $3 }')
+
+# Get the current workspace monitor
+monitor=$(hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk -F'[ :]' '{ print $7 }')
+
+# Get the target workspace monitor
+monitor_target=$(hyprctl workspaces | grep -wv 'grep' | grep -w "ID $workspace_target" | awk -F'[ :]' '{ print $7 }')
+
+# If the target workspace monitor is undefined, then just move to the workspace
+if [ -z "$monitor_target" ]; then
+    hyprctl dispatch workspace $workspace_target
+    exit
+fi
+
+# Get the current workspace monitor x and y
+monitor_x=$(hyprctl monitors | grep -w "Monitor $monitor" -A 1 | grep -oE 'at [0-9]+x[0-9]+' | awk -F'[ x]' '{ print $2 }')
+monitor_y=$(hyprctl monitors | grep -w "Monitor $monitor" -A 1 | grep -oE 'at [0-9]+x[0-9]+' | awk -F'[ x]' '{ print $3 }')
+
+# Get the target workspace monitor x and y
+monitor_target_x=$(hyprctl monitors | grep -w "Monitor $monitor_target" -A 1 | grep -oE 'at [0-9]+x[0-9]+' | awk -F'[ x]' '{ print $2 }')
+monitor_target_y=$(hyprctl monitors | grep -w "Monitor $monitor_target" -A 1 | grep -oE 'at [0-9]+x[0-9]+' | awk -F'[ x]' '{ print $3 }')
+
+# Get the current cursor x and y
+cursor_x=$(hyprctl cursorpos | awk -F', ' '{ print $1 }')
+cursor_y=$(hyprctl cursorpos | awk -F', ' '{ print $2 }')
+
+# Get the difference between the current workspace monitor and the target workspace monitor
+monitor_x_diff=$(($monitor_target_x - $monitor_x))
+monitor_y_diff=$(($monitor_target_y - $monitor_y))
+
+# Get the target cursor x and y
+cursor_target_x=$(($cursor_x + $monitor_x_diff))
+cursor_target_y=$(($cursor_y + $monitor_y_diff))
+
+# Move to the target workspace
+hyprctl dispatch workspace $workspace_target
+
+# Move the cursor to the target workspace monitor
+echo hyprctl dispatch movecursor $cursor_target_x $cursor_target_y
+hyprctl dispatch movecursor $cursor_target_x $cursor_target_y
