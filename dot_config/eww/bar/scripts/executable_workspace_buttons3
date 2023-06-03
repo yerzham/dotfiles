@@ -7,7 +7,7 @@ n=$1
 monitor_colors_file=$2
 
 current_workspace (){
-    hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk '{ print $3 }'
+    hyprctl activeworkspace | grep -wv 'grep' | grep 'workspace ID' | awk '{ print $3 }'
 }
 
 workspace_buttons (){
