@@ -1,6 +1,6 @@
 (defvar eww "eww --config ~/.config/eww/bar")
 (defpoll volume_percent :interval "1s" "amixer sget Master | grep 'Mono:' | awk -F'[][]' '{ print $2 }' | tr -d '%'")
-(defpoll workspace :interval "200ms" "hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk '{ print $3 }'")
+(defpoll workspace :interval "200ms" "hyprctl activeworkspace | grep -wv 'grep' | grep 'workspace ID' | awk '{ print $3 }'")
 (defpoll monitor :interval "200ms" "hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk -F'[ :]' '{ print $7 }'")
 (defpoll clock_time :interval "5m" "date +\%H")
 (defpoll clock_minute :interval "5s" "date +\%M")
