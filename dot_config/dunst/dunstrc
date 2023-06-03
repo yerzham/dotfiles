@@ -1,79 +1,27 @@
 # See dunst(5) for all configuration options
 
 [global]
-    ### Display ###
-
-    # Which monitor should the notifications be displayed on.
     monitor = 0
-
-    # Display notification on focused monitor.  Possible modes are:
-    #   mouse: follow mouse pointer
-    #   keyboard: follow window with keyboard focus
-    #   none: don't follow anything
-    #
-    # "keyboard" needs a window manager that exports the
-    # _NET_ACTIVE_WINDOW property.
-    # This should be the case for almost all modern window managers.
-    #
-    # If this option is set to mouse or keyboard, the monitor option
-    # will be ignored.
-    follow = none
-
-    ### Geometry ###
-
-    # dynamic width from 0 to 300
-    # width = (0, 300)
-    # constant width of 300
+    follow = mouse
     width = 300
-
-    # The maximum height of a single notification, excluding the frame.
     height = 300
-
-    # Position the notification in the top right corner
-    origin = top-right
-
-    # Offset from the origin
-    offset = 10x50
-
-    # Scale factor. It is auto-detected if value is 0.
+    origin = bottom-right
+    offset = 10x20
     scale = 0
-
-    # Maximum number of notification (0 means no limit)
     notification_limit = 20
-
-    ### Progress bar ###
-
-    # Turn on the progess bar. It appears when a progress hint is passed with
-    # for example dunstify -h int:value:12
     progress_bar = true
-
-    # Set the progress bar height. This includes the frame, so make sure
-    # it's at least twice as big as the frame width.
-    progress_bar_height = 10
-
-    # Set the frame width of the progress bar
-    progress_bar_frame_width = 1
-
-    # Set the minimum width for the progress bar
+    progress_bar_height = 8
+    progress_bar_frame_width = 0
     progress_bar_min_width = 150
-
-    # Set the maximum width for the progress bar
     progress_bar_max_width = 300
-
-    # Corner radius for the progress bar. 0 disables rounded corners.
-    progress_bar_corner_radius = 0
-
-    # Corner radius for the icon image.
-    icon_corner_radius = 0
-
-    # Show how many messages are currently hidden (because of
-    # notification_limit).
+    progress_bar_corner_radius = 5
+    icon_corner_radius = 5
     indicate_hidden = yes
 
     # The transparency of the window.  Range: [0; 100].
     # This option will only work if a compositing window manager is
     # present (e.g. xcompmgr, compiz, etc.). (X11 only)
-    transparency = 0
+    transparency = 80
 
     # Draw a line of "separator_height" pixel height between two
     # notifications.
@@ -163,7 +111,7 @@
     #   %n  progress value if set without any extra characters
     #   %%  Literal %
     # Markup is allowed
-    format = "<b>%s</b>\n%b"
+    format = "<span foreground='#f3f4f5'><b>%s %p</b></span>\n%b"
 
     # Alignment of message text.
     # Possible values are "left", "center" and "right".
@@ -250,7 +198,7 @@
     # corners.
     # The radius will be automatically lowered if it exceeds half of the
     # notification height to avoid clipping text and/or icons.
-    corner_radius = 10
+    corner_radius = 8
 
     # Ignore the dbus closeNotification message.
     # Useful to enforce the timeout set by dunst configuration. Without this
@@ -313,7 +261,7 @@
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
     # Otherwise the "#" and following would be interpreted as a comment.
-    background = "#222222"
+    background = "#1e1e1e44"
     foreground = "#888888"
     timeout = 10
     # Icon for notifications with low urgency, uncomment to enable
