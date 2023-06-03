@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# arg1: workspace number
+# arg2: mointor colors file path
+
+n=$1
+monitor_colors_file=$2
+
+current_workspace (){
+    hyprctl activeworkspace | grep -wv 'grep' | grep 'ID' | awk '{ print $3 }'
+}
+
+workspace_buttons (){
+    printf "["
+    for i in $(seq 1 $n); do
+        workspace=$i
+
+        monitor=$(hyprctl workspaces | grep -wv 'grep' | grep -w "ID $workspace" | awk -F'[ :]' '{ print $7 }')
+        if [ -z "$monitor" ]; then
+            monitor="none"
+        fi
+
+        monitor_id=$(hyprctl monitors | grep -w "Monitor $monitor" -A 1 | grep -w 'ID' | awk -F'[ )]' '{ print $4 }')
+        if [ -z "$monitor_id" ]; then
+            monitor_id="none"
+        fi
+
+        monitor_color=$(grep -oE "$monitor_id[ =]+[0-9a-fA-F]{6}" "$monitor_colors_file" | awk -F'=' '{ print $2 }' | awk '{$1=$1};1')
+        if [ -z "$monitor_color" ]; then
+            monitor_color="888888"
+        fi
+
+        if [ "$workspace" -eq "$(current_workspace)" ]; then
+            printf "{\"id\":\"$workspace\",\"active\":true,\"color\":\"#$monitor_color;\"}"
+        else
+            printf "{\"id\":\"$workspace\",\"active\":false,\"color\":\"#$monitor_color;\"}"
+        fi
+
+        if [ "$i" -ne "$n" ]; then
+            printf ","
+        fi
+    done
+    printf "]\n"
+}
+
+workspace_buttons
+socat -u UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r line; do
+	workspace_buttons
+done
