@@ -9,14 +9,18 @@
 (defvar clock_reveal false)
 (defvar setworkspace "scripts/setworkspace")
 (defvar setworkspace_color "scripts/setworkspace_color data/monitor_colors.conf")
-(defpoll workspace_buttons :interval "2s" "scripts/workspace_buttons2 9 data/monitor_colors.conf")
+(deflisten workspace_buttons :initial "(box)" "scripts/workspace_buttons3 9 data/monitor_colors.conf")
 
 (defwidget workspaces []
-  (box :class "module" :orientation "h" :space-evenly false :spacing 15 
-  (literal :content workspace_buttons)
+  (box :class "module" :orientation "h" :space-evenly false :spacing 15
+    (box :class "module" :orientation "h" :space-evenly true :valign "center" :halign "center" :spacing 10 :height 30
+      (for workspace_button in workspace_buttons
+        (button :onclick "${setworkspace} ${workspace_button.id}" :tooltip "Workspace ${workspace_button.id}" :style "color: ${workspace_button.color}" {workspace_button.active ? "" : ""} )
+      )
+    )
     (label :height 30 :text workspace :yalign: 0 :class "workspace_label") 
   )
-)
+) 
 
 (defwidget metric [value onchange]
   (box :orientation "h"
