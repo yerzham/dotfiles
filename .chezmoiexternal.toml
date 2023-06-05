@@ -5,3 +5,14 @@
 	stripComponents = 1
 	refreshPeriod = "168h"
 
+[".tmux/plugins/tpm"]
+	type = "git-repo"
+	url = "https://github.com/tmux-plugins/tpm"
+	refreshPeriod = "168h"
+
+[".vim/pack/plugins/start/vim-tmux-navigator"]
+	type = "git-repo"
+	url = "https://github.com/christoomey/vim-tmux-navigator"
+	refreshPeriod = "168h"
+
+
