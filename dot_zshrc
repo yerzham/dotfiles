@@ -87,7 +87,7 @@ bindkey -v
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='nano'
 else
-  export EDITOR='code'
+  export EDITOR='code -w'
 fi
 
 # Compilation flags
